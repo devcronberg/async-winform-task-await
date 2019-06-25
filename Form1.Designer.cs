@@ -133,7 +133,7 @@
             this.Controls.Add(this.btnTask);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Async Deno";
+            this.Text = "Async Demo";
             this.ResumeLayout(false);
             this.PerformLayout();
 
