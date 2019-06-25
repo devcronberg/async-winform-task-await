@@ -1,3 +1,3 @@
 # Demo af sync/async kode i en WinForm
 
-![](async-winform-task-await.png)
+![](https://raw.githubusercontent.com/devcronberg/async-winform-task-await/master/async-winform-task-awai.png)
