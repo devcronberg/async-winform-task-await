@@ -27,9 +27,9 @@ namespace async_winform_task_await
                 tokenSource = new CancellationTokenSource();
                 btnAwait.Enabled = false;
                 btnAwaitAfbryd.Enabled = true;
-                txtTal.Text = "";
+                txtTal.ResetText();                
                 Repository r = new Repository();
-                string resultat = await r.HentTilfældigVærdiAsync(tokenSource.Token, chkDanFejl.Checked);
+                string resultat = await r.HentTilfældigVærdiAsync(tokenSource.Token).ConfigureAwait(true);
                 txtTal.Text = resultat;
             }
             catch (TaskCanceledException)
@@ -58,9 +58,9 @@ namespace async_winform_task_await
             {
                 this.Cursor = Cursors.WaitCursor;
                 btnSync.Enabled = false;
-                txtTal.Text = "";
+                txtTal.ResetText();                
                 Repository r = new Repository();
-                txtTal.Text = r.HentTilfældigVærdiSync(chkDanFejl.Checked);
+                txtTal.Text = r.HentTilfældigVærdiSync();
             }
             catch (Exception ex)
             {
@@ -73,35 +73,7 @@ namespace async_winform_task_await
             }
         }
 
-        private void BtnTask_Click(object sender, EventArgs e)
-        {
-            tokenSource = new CancellationTokenSource();
-            btnTask.Enabled = false;
-            btnTaskAfbryd.Enabled = true;
-            txtTal.Text = "";
-            Repository r = new Repository();
-            Task<string> task = r.HentTilfældigVærdiAsync(tokenSource.Token, chkDanFejl.Checked);
-            task.ContinueWith(t =>
-            {
-                switch (t.Status)
-                {
-                    case TaskStatus.RanToCompletion:
-                        txtTal.Text = t.Result;
-                        break;
-                    case TaskStatus.Canceled:
-                        MessageBox.Show("Operation afbrudt", "Afbryd");
-                        break;
-                    case TaskStatus.Faulted:
-                        foreach (var item in t.Exception.Flatten().InnerExceptions)
-                            MessageBox.Show(item.Message, "Fejl");
-                        break;
-                }
-                btnTask.Enabled = true;
-                btnTaskAfbryd.Enabled = false;
-
-            }, TaskScheduler.FromCurrentSynchronizationContext());
-
-        }
+        
 
         private void BtnTaskAfbryd_Click(object sender, EventArgs e)
         {

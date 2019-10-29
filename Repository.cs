@@ -13,30 +13,26 @@ namespace async_winform_task_await
     {
         private const string url = "http://webdemo.cronberg.dk/service/dice_txt/3000";
 
-        public async Task<string> HentTilfældigVærdiAsync(CancellationToken token, bool fejl = false) {
+        public async Task<string> HentTilfældigVærdiAsync(CancellationToken token) {
 
-            if (fejl)
-                throw new ApplicationException("Fejl fra HentTilfældigVærdi()");
-
-            using (var client = new HttpClient())
+            return await Task<string>.Run(async () =>
             {
-                var r = await client.GetAsync(url, token);
-                token.ThrowIfCancellationRequested();
-                if (r.IsSuccessStatusCode)
-                    return await r.Content.ReadAsStringAsync();
-                else
-                    throw new ApplicationException("Kan ikke hente tal");
-            }
+                using (var client = new HttpClient())
+                {
+                    token.ThrowIfCancellationRequested();                    
+                    HttpResponseMessage r = await client.GetAsync(url, token);
+                    if (r.IsSuccessStatusCode)
+                        return await r.Content.ReadAsStringAsync();
+                    else
+                        throw new ApplicationException("Kan ikke hente tal");
+                }
+            }, token);
         }
 
-        public string HentTilfældigVærdiSync(bool fejl = false)
+        public string HentTilfældigVærdiSync()
         {
-
-            if (fejl)
-                throw new ApplicationException("Fejl fra HentTilfældigVærdiSync()");
-
             using (WebClient w = new WebClient())
-            {
+            {                
                 string res = w.DownloadString(new Uri(url));
                 return res;
             }
