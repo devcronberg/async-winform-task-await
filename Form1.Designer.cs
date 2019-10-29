@@ -41,7 +41,7 @@
             this.btnAwait.Name = "btnAwait";
             this.btnAwait.Size = new System.Drawing.Size(75, 23);
             this.btnAwait.TabIndex = 3;
-            this.btnAwait.Text = "Med await";
+            this.btnAwait.Text = "ASync";
             this.btnAwait.UseVisualStyleBackColor = true;
             this.btnAwait.Click += new System.EventHandler(this.BtnAwait_Click);
             // 
