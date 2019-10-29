@@ -9,12 +9,10 @@ Denne demo viser forskellen på synkrone og asynkrone kald når der skal hentes 
 Bemærk:
 
 - Klik på "Sync"-knappen låser brugerfladen i 3 sekunder, og der er ingen mulighed for at afbryde
-- Klik på "Med Task"-knappen henter data asynkront med mulighed for at afbryde. Bemærk, at UI ikke låser
-- Klik på "Med await"-knappen henter data asynkront med mulighed for at afbryde. Bemærk, at UI ikke låser
-- At koden ved brug af await er meget simplere end ved brug af Task alene
-- Prøv også de forskellige knapper ved kryds i "Dan fejl". Så vil der blot smides en Exception
+- Klik på "Med await"-knappen henter data asynkront med mulighed for at afbryde. Bemærk, at
+  - UI ikke låser
+  - at koden ved brug af await er meget simpel
 
 Eksemplet må bruges frit men smid gerne en reference til repository.
 
 /Michell
-
