@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +15,9 @@ namespace async_winform_task_await
 {
     public partial class Form1 : Form
     {
+
+        private const string url = "http://webdemo.cronberg.dk/service/dice_txt/3000";
+
         public Form1()
         {
             InitializeComponent();
@@ -24,17 +29,24 @@ namespace async_winform_task_await
         {
             try
             {
+                this.Cursor = Cursors.WaitCursor;
                 tokenSource = new CancellationTokenSource();
+                CancellationToken token = tokenSource.Token;
                 btnAwait.Enabled = false;
+                btnSync.Enabled = false;
                 btnAwaitAfbryd.Enabled = true;
-                txtTal.ResetText();                
-                Repository r = new Repository();
-                string resultat = await r.HentTilfældigVærdiAsync(tokenSource.Token).ConfigureAwait(true);
-                txtTal.Text = resultat;
+                txtTal.ResetText();
+                txtTal.Enabled = false;
+                using (HttpClient client = new HttpClient())
+                {
+                    token.ThrowIfCancellationRequested();
+                    HttpResponseMessage r = await client.GetAsync(url, token);
+                    txtTal.Text = await r.Content.ReadAsStringAsync();
+                }
             }
             catch (TaskCanceledException)
             {
-                MessageBox.Show("Operation afbrudt", "Afbryd");
+                txtTal.ResetText();                
             }
             catch (Exception ex)
             {
@@ -44,12 +56,15 @@ namespace async_winform_task_await
             {
                 btnAwait.Enabled = true;
                 btnAwaitAfbryd.Enabled = false;
+                txtTal.Enabled = true;
+                this.Cursor = Cursors.Default;
+                btnSync.Enabled = true;
             }
         }
 
         private void BtnAwaitAfbryd_Click(object sender, EventArgs e)
         {
-            tokenSource.Cancel();            
+            tokenSource.Cancel();
         }
 
         private void BtnSync_Click(object sender, EventArgs e)
@@ -58,9 +73,15 @@ namespace async_winform_task_await
             {
                 this.Cursor = Cursors.WaitCursor;
                 btnSync.Enabled = false;
-                txtTal.ResetText();                
-                Repository r = new Repository();
-                txtTal.Text = r.HentTilfældigVærdiSync();
+                btnAwait.Enabled = false;
+                txtTal.Enabled = false;
+                txtTal.ResetText();
+                this.Update();
+                using (WebClient w = new WebClient())
+                {
+                    txtTal.Text = w.DownloadString(new Uri(url));
+                }
+
             }
             catch (Exception ex)
             {
@@ -70,14 +91,34 @@ namespace async_winform_task_await
             {
                 btnSync.Enabled = true;
                 this.Cursor = Cursors.Default;
+                txtTal.Enabled = true;
+                btnAwait.Enabled = true;
             }
         }
 
-        
+
 
         private void BtnTaskAfbryd_Click(object sender, EventArgs e)
         {
-            tokenSource.Cancel();            
+            tokenSource.Cancel();
+        }
+
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+            if (ProgressBar1.Value == 100)
+                ProgressBar1.Value = 0;
+            ProgressBar1.Value += 10;
+        }
+
+        private void BtnAwaitAfbryd_MouseEnter(object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.Default;
+        }
+
+        private void BtnAwaitAfbryd_MouseLeave(object sender, EventArgs e)
+        {
+            if(btnAwaitAfbryd.Enabled)
+                this.Cursor = Cursors.WaitCursor;
         }
     }
 }
