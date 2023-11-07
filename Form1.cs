@@ -16,7 +16,7 @@ namespace async_winform_task_await
     public partial class Form1 : Form
     {
 
-        private const string url = "http://webdemo.cronberg.dk/service/dice_txt/3000";
+        private const string url = "https://httpbin.org/delay/5";
 
         public Form1()
         {
@@ -41,7 +41,7 @@ namespace async_winform_task_await
                 {
                     token.ThrowIfCancellationRequested();
                     HttpResponseMessage r = await client.GetAsync(url, token);
-                    txtTal.Text = await r.Content.ReadAsStringAsync();
+                    txtTal.Text = "200 OK";
                 }
             }
             catch (TaskCanceledException)
@@ -79,7 +79,9 @@ namespace async_winform_task_await
                 this.Update();
                 using (WebClient w = new WebClient())
                 {
-                    txtTal.Text = w.DownloadString(new Uri(url));
+                    var r = w.DownloadString(new Uri(url));
+                    txtTal.Text = txtTal.Text = "200 OK";
+                    
                 }
 
             }
@@ -119,6 +121,11 @@ namespace async_winform_task_await
         {
             if(btnAwaitAfbryd.Enabled)
                 this.Cursor = Cursors.WaitCursor;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.Text = " " + url;
         }
     }
 }
